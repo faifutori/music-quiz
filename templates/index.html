@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>音楽クイズジェネレーター</title>
+    <title>音楽クイズ</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f0f2f5; color: #1c1e21; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .container { display: flex; width: 90%; max-width: 1200px; height: 80vh; max-height: 700px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
-        .controls { flex: 1; padding: 30px; border-right: 1px solid #dddfe2; display: flex; flex-direction: column; gap: 25px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #a83d49; color: #1c1e21; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .container { display: flex; width: 90%; max-width: 1200px; height: 100vh; max-height: 700px; background-color: #ffffff; border-radius: 12px;}
+        .controls { flex: 1; padding: 30px; border-right: 1px solid #f9eef1; display: flex; flex-direction: column; gap: 25px; }
         .quiz-area { flex: 2; padding: 30px; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; }
-        h1 { margin: 0 0 10px 0; color: #1c1e21; border-bottom: 2px solid #f19db5; padding-bottom: 10px; }
+        h1 { margin: 0 0 10px 0; color: #1c1e21; border-bottom: 2px solid #a83d49; padding-bottom: 10px; }
         .control-group { display: flex; flex-direction: column; }
         label { font-weight: 600; margin-bottom: 8px; color: #606770; }
         select, input[type="range"] { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccd0d5; font-size: 16px; box-sizing: border-box;}
         .radio-group label { display: block; margin-bottom: 10px; font-weight: normal; }
-        button { background-color: #f19db5; color: white; border: none; padding: 15px 20px; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; transition: background-color 0.2s; width: 100%; }
+        button { background-color: #a83d49; color: white; border: none; padding: 15px 20px; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; transition: background-color 0.2s; width: 100%; }
         #next-question-btn { margin-top: auto; }
         button:hover { background-color: #d88ca1; }
         button:disabled { background-color: #f8dde5; cursor: not-allowed; }
@@ -49,7 +49,7 @@
         #show-answer-btn:hover { background-color: #2b8c1a; }
 
         #status-message { font-size: 1.2em; color: #606770; position: absolute; top: 40px; text-align: center; }
-        .duration-value { font-weight: bold; color: #f19db5; }
+        .duration-value { font-weight: bold; color: #a83d49; }
 
         #audio-progress-bar {
             display: none;
@@ -67,12 +67,12 @@
             border-radius: 4px;
         }
         #audio-progress-bar::-webkit-progress-value {
-            background-color: #f19db5;
+            background-color: #a83d49;
             border-radius: 4px;
             transition: width 0.1s linear;
         }
         #audio-progress-bar::-moz-progress-bar {
-            background-color: #f19db5;
+            background-color: #a83d49;
             border-radius: 4px;
         }
     </style>
@@ -80,7 +80,6 @@
 <body>
     <div class="container">
         <div class="controls">
-            <h1>クイズ設定</h1>
             <div class="control-group">
                 <label for="group-select">グループ選択</label>
                 <select id="group-select"></select>
@@ -94,20 +93,20 @@
             </div>
             <div id="intro-duration-group" class="control-group">
                 <label for="intro-duration">イントロ再生時間: <span id="intro-duration-value" class="duration-value">1</span>秒</label>
-                <input type="range" id="intro-duration" min="1" max="30" value="1">
+                <input type="range" id="intro-duration" min="0.5" max="60" value="1" step="0.5">
             </div>
             <div id="reverse-duration-group" class="control-group" style="display: none;">
                 <label for="reverse-duration">逆再生の長さ: <span id="reverse-duration-value" class="duration-value">15</span>秒</label>
-                <input type="range" id="reverse-duration" min="5" max="30" value="15">
+                <input type="range" id="reverse-duration" min="5" max="60" value="15">
             </div>
             <button id="next-question-btn">問題スタート</button>
         </div>
         <div class="quiz-area">
             <div id="status-message">設定を選んでクイズを開始してください</div>
             <audio id="audio-player"></audio>
-            
+
             <progress id="audio-progress-bar" value="0" max="100"></progress>
-            
+
             <div id="quiz-interaction-area">
                 <h2 id="answer-display"></h2>
                 <div class="button-wrapper">
@@ -130,7 +129,7 @@
             const audioPlayer = document.getElementById('audio-player');
             const statusMessage = document.getElementById('status-message');
             const quizTypeRadios = document.querySelectorAll('input[name="quiz-type"]');
-            
+
             const introDurationSlider = document.getElementById('intro-duration');
             const introDurationValue = document.getElementById('intro-duration-value');
             const reverseDurationSlider = document.getElementById('reverse-duration');
@@ -149,7 +148,7 @@
                     const response = await fetch('/api/groups');
                     const groups = await response.json();
                     if (groups.error) throw new Error(groups.error);
-                    
+
                     groupSelect.innerHTML = '<option value="all">全ての曲から</option>';
                     groups.forEach(group => {
                         const option = document.createElement('option');
@@ -161,7 +160,7 @@
                     statusMessage.textContent = 'エラー: ' + error.message;
                 }
             }
-            
+
             const resetQuizState = () => {
                 usedTracks = [];
                 statusMessage.textContent = '「問題スタート」ボタンで開始します';
@@ -188,12 +187,25 @@
             introDurationSlider.addEventListener('input', () => { introDurationValue.textContent = introDurationSlider.value; });
             reverseDurationSlider.addEventListener('input', () => { reverseDurationValue.textContent = reverseDurationSlider.value; });
 
+            // ★★★ ここから修正箇所 ★★★
             audioPlayer.addEventListener('timeupdate', () => {
-                if (audioPlayer.duration) {
+                const selectedQuizType = document.querySelector('input[name="quiz-type"]:checked').value;
+
+                if (selectedQuizType === 'intro') {
+                    // イントロクイズの場合、最大値を設定した再生時間にする
+                    const duration = parseInt(introDurationSlider.value, 10);
+                    audioProgressBar.max = duration;
                     audioProgressBar.value = audioPlayer.currentTime;
-                    audioProgressBar.max = audioPlayer.duration;
+                } else {
+                    // 逆再生クイズの場合、音声ファイルの長さを最大値にする
+                    if (audioPlayer.duration) {
+                        audioProgressBar.max = audioPlayer.duration;
+                        audioProgressBar.value = audioPlayer.currentTime;
+                    }
                 }
             });
+            // ★★★ ここまで修正箇所 ★★★
+
             audioPlayer.addEventListener('ended', () => {
                 audioProgressBar.style.display = 'none';
             });
@@ -205,7 +217,7 @@
                 audioPlayer.currentTime = 0;
                 audioProgressBar.style.display = 'block';
                 audioPlayer.play();
-                
+
                 if (document.querySelector('input[name="quiz-type"]:checked').value === 'intro') {
                     const duration = parseInt(introDurationSlider.value, 10) * 1000;
                     introTimer = setTimeout(() => {
@@ -214,7 +226,7 @@
                     }, duration);
                 }
             }
-            
+
             function startCountdown() {
                 return new Promise(resolve => {
                     let count = 3;
@@ -236,12 +248,12 @@
                     }, 1000);
                 });
             }
-            
+
             async function fetchNewQuestion() {
                 clearTimeout(introTimer);
                 audioPlayer.pause();
                 audioProgressBar.style.display = 'none';
-                
+
                 nextQuestionBtn.disabled = true;
                 statusMessage.textContent = '';
                 quizInteractionArea.style.display = 'none';
@@ -249,7 +261,7 @@
                 showAnswerBtn.style.display = 'inline-block';
 
                 await startCountdown();
-                
+
                 nextQuestionBtn.textContent = '読込中...';
                 statusMessage.textContent = '曲を読み込んでいます...';
 
@@ -267,20 +279,20 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     });
-                    
+
                     if (!response.ok) throw new Error((await response.json()).error || 'クイズ取得失敗');
-                    
+
                     const data = await response.json();
                     if (data.finished) {
                         statusMessage.textContent = data.error;
                         resetQuizState(); return;
                     }
-                    
+
                     currentAnswer = data.answer;
                     usedTracks.push(data.filename);
                     audioPlayer.src = `${data.audio_url}?t=${new Date().getTime()}`;
                     audioPlayer.load();
-                    
+
                     audioPlayer.oncanplaythrough = () => {
                         quizInteractionArea.style.display = 'block';
                         replayAudio(); // 初回再生
@@ -296,7 +308,7 @@
                     nextQuestionBtn.textContent = '次の問題へ';
                 }
             }
-            
+
             // --- 実行 ---
             initialize();
         });

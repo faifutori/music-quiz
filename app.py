@@ -93,10 +93,10 @@ def get_quiz():
         traceback.print_exc()
         return jsonify({"error": f"サーバーエラー: {e}"}), 500
 
-# if __name__ == '__main__':
-#     if os.path.exists(TEMP_DIR):
-#         for file in os.listdir(TEMP_DIR):
-#             os.remove(os.path.join(TEMP_DIR, file))
-#     app.run(host='0.0.0.0', port=5001, debug=True)
+if __name__ == '__main__':
+    if os.path.exists(TEMP_DIR):
+        for file in os.listdir(TEMP_DIR):
+            os.remove(os.path.join(TEMP_DIR, file))
+    app.run(host='0.0.0.0', port=5001, debug=True)
 
     # python app.py
